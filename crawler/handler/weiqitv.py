@@ -39,7 +39,8 @@ class weiqitv_handler(crawl_video_handler):
     def get_video_source_url(self, url:str) -> str:
         # get download url
         try:
-            query_url = 'http://www.flvcd.com/parse.php?kw=%s&flag=one&format=super' % quote(url.replace('http://', ''))
+            # normal super real
+            query_url = 'http://www.flvcd.com/parse.php?kw=%s&format=super' % quote(url.replace('http://', ''))
             resp = advanced_crawl(query_url, use_proxy=True)
             p = re.compile(r' href="(?P<data>http://play.g3proxy.lecloud.com[^"]+)"')
             m = p.search(resp)
