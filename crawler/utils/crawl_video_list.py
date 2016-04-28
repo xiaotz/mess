@@ -1,23 +1,22 @@
 import os
-from utils.crawler import crawl_big_file
+from utils.crawler import crawl_big_file, crawl_multiple_url_into_file
 
 
 class crawl_video_handler(object):
-
     def __init__(self):
         self.base_url = None
 
-    def set_base_url(self, url:str):
-        self.base_url = url
+    def set_base_url(self, base_rul):
+        self.base_url = base_rul
 
-    def get_video_url_list(self) -> list: pass
+    def get_video_url_list(self): pass
 
-    def get_video_name(self, url:str) -> str: pass
+    def get_video_name(self, video_url): pass
 
-    def get_video_source_url(self, url:str) -> str: pass
+    def get_video_source_url(self, video_url): pass
 
 
-def start_crawl(handler:crawl_video_handler, url:str, base_dir:str):
+def start_crawl(handler, url, base_dir):
     handler.set_base_url(url)
     url_list = handler.get_video_url_list()
     if url_list is None:
@@ -32,8 +31,14 @@ def start_crawl(handler:crawl_video_handler, url:str, base_dir:str):
         if os.path.exists(target_file_name):
             continue
         else:
+            print('downloading ' + target_file_name)
             source_url = handler.get_video_source_url(url)
             if source_url is None:
                 exit(-1)
-            print('downloading ' + target_file_name)
-            crawl_big_file(source_url, target_file_name)
+                # continue
+            elif type(source_url) is str:
+                crawl_big_file(source_url, target_file_name)
+            elif type(source_url) is list:
+                crawl_multiple_url_into_file(source_url, target_file_name)
+            else:
+                raise Exception("unknown download type")
