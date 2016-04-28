@@ -10,4 +10,5 @@
 2. 访问weiqitv.com和flvcd.com没有问题的不用管proxy
 3. 解析视频用了某个网站的抓取视频的结果，曾经使用过该网站提供的下载工具，不太好用，所以写了这个小工具
 4. weiqitv.py里面的format可以选三种，normal,super,real。以猫哥讲定式为例，norma大概60M, super大概240M, real大概500M
-5. 没有在windows下测试过
+5. 如果下失败了，再次下载可自动忽略已经下载的文件，重试可以解决大部分问题。
+6. 没有在windows下测试过

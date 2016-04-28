@@ -7,8 +7,9 @@ from utils.crawler import crawl, firefox_crawl
 
 
 class weiqitv_handler(crawl_video_handler):
-    def __init__(self, video_format):
+    def __init__(self, video_format, use_proxy=False):
         self.format = video_format
+        self.use_proxy = use_proxy
 
     def get_video_url_list(self):
         resp = crawl(self.base_url)
@@ -41,7 +42,7 @@ class weiqitv_handler(crawl_video_handler):
     def get_video_source_url(self, video_url):
         try:
             query_url = 'http://www.flvcd.com/parse.php?kw=%s&format=%s' % (quote(video_url.replace('http://', '')), self.format)
-            resp = firefox_crawl(query_url, use_proxy=True)
+            resp = firefox_crawl(query_url, use_proxy=self.use_proxy)
             p = re.compile(r' href="(?P<data>http://play.g3proxy.lecloud.com[^"]+)"')
             m = p.search(resp)
             if m is None:
@@ -54,7 +55,7 @@ class weiqitv_handler(crawl_video_handler):
                 else:
                     sid = m.group('sid')
                     # vid = m.group('vid')
-                    info_url='http://www.yunsp.com.cn:8080/dispatch/videoPlay/getInfo?vid=%s&sid=%s&isList=0&ecode=notexist' % (m.group('vid'), m.group('sid'))
+                    info_url = 'http://www.yunsp.com.cn:8080/dispatch/videoPlay/getInfo?vid=%s&sid=%s&isList=0&ecode=notexist' % (m.group('vid'), m.group('sid'))
                     info_resp = crawl(info_url)
                     info_resp_json = json.loads(info_resp)
                     hint_url = info_resp_json[0]['posterUrl']
@@ -64,13 +65,13 @@ class weiqitv_handler(crawl_video_handler):
                     m3u8_url = 'http://hlsat.upuday.com/vod/ovp/%s/mp4/800/%s.mp4/av-g.m3u8' % (sid, video_id)
                     download_url_resp = crawl(m3u8_url)
                     download_url = []
-                    for url in download_url_resp.split('\n'):
-                        if not url.startswith('#') and url:
-                            download_url.append(url)
+                    for d_url in download_url_resp.split('\n'):
+                        if not d_url.startswith('#') and d_url:
+                            download_url.append(d_url)
                     return download_url
             else:
                 download_url = html.unescape(m.group('data'))
                 return download_url
         except Exception as e:
-            print('error occurs when get download url for %s, error = %s' % (url, str(e)))
+            print('error occurs when get download url for %s, error = %s' % (video_url, str(e)))
             return None
